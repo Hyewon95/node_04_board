@@ -1,4 +1,23 @@
 extends ../layout/default.pug
 block content
-	h1 LIST
-	button.btn.btn-primary(onclick="location.href='/board/write';") 게시글 작성
+	.container
+		.jumbotron.my-2
+			h1= title
+			button.btn.btn-primary(onclick="location.href='/board/write';") 게시글 작성
+		table.table.table-bordered.text-center
+			thead.thead-dark
+				tr
+					th 번호
+					th 제목
+					th 작성자
+					th 내용
+					th 작성일
+			tbody
+				each v in lists
+					tr
+						td= v.id
+						td.text-left
+							a(href=`/board/view/${v.id}`)= v.title
+						td= v.writer
+						td.text-left= v.content
+						td= v.wdate

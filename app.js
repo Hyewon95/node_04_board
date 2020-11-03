@@ -5,7 +5,7 @@ const app = express();
 const path = require('path');
 
 /* modules */
-const {pool} = require('./modules/mysql_conn'); // 객체로 exports하였으므로 그 중 pool만 받으려면, 비구조할당으로 받아옴
+/* const {pool} = require('./modules/mysql_conn'); */ // 객체로 exports하였으므로 그 중 pool만 받으려면, 비구조할당으로 받아옴
 const boardRouter = require('./routes/board');
 const galleryRouter = require('./routes/gallery');
 
@@ -41,6 +41,7 @@ app.use((req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
+	console.log(err);
 	const code = err.code || 500;
 	const msg = err.msg || '서버 내부 오류입니다. 관리자에게 문의하세요.';
 	res.render('./error.pug', {code, msg});
