@@ -1,8 +1,10 @@
 const express = require('express');
 const moment = require('moment');
+const path = require('path');
 const router = express.Router();
 const {pool} = require('../modules/mysql_conn');
 const {alert} = require('../modules/util');
+const {upload, imgExt} = require('../modules/multer_conn');
 
 router.get(['/', '/list'], async (req, res, next) => { // 127.0.0.1:3000/board 혹은 127.0.0.1:3000/board/list
 	const pug = {title: '게시판 리스트', js: 'board', css: 'board'};
@@ -27,10 +29,23 @@ router.get('/write', (req, res, next) => {
 	res.render('./board/write.pug', pug);
 });
 
-router.post('/save', async (req, res, next) => { // 주의) get 방식이 아니라 post 방식으로 받음
+router.post('/save', upload.single('upfile'), async (req, res, next) => { // 주의) get 방식이 아니라 post 방식으로 받음
 	const {title, content, writer} = req.body;
-	var values = [title, content, writer];
+	const values = [title, content, writer];
 	var sql = 'INSERT INTO board SET title=?, content=?, writer=?';
+
+	// 파일 형식이 허용되든 아니든 upload 시켰다면, req에 allowUpload가 존재
+	if(req.allowUpload){ 
+		if(req.allowUpload.allow){ // allowUpload: {allow: true, ext: jpg};파일이 허용되는 형식이라면
+			values.push(req.file.filename);
+			values.push(req.file.originalname);
+			sql += ', savefile=?, realfile=?';
+		}
+		else{ // allowUpload: {allow: false, ext: jpg};파일이 허용되는 형식이 아니라면
+			res.send(alert(`${req.allowUpload.ext}은(는) 업로드 할 수 없습니다.`, '/board'));
+		}
+	}
+
 	try{
 		const connect = await pool.getConnection();
 		console.log(connect);
@@ -53,6 +68,14 @@ router.get('/view/:id', async (req, res) => {
 		connect.release();
 		pug.list = rs[0][0];
 		pug.list.wdate = moment(pug.list.wdate).format('YYYY-MM-DD HH:mm:ss');
+		if(pug.list.savefile){
+			var ext = path.extname(pug.list.savefile).toLowerCase().replace(".", "");
+			if(imgExt.indexOf(ext) > -1){ // 이미지라면
+				pug.list.imgSrc = `/storage/${pug.list.savefile.substr(0, 6)}/${pug.list.savefile}`;
+			}
+			// 이미지 외 다른 문서 파일이라면
+			pug.list.download = `/storage/${pug.list.savefile.substr(0, 6)}/${pug.list.savefile}`;
+		}
 		res.render('./board/view.pug', pug);
 		// res.json(rs);
 	}

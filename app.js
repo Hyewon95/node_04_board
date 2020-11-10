@@ -25,7 +25,10 @@ app.locals.pretty = true; // 클라이언트가 받아보는 html 문서 형식 
 /* middleware */
 // app.use(logger, express.json(), express.urlencoded({extended: false})); // 아래 세 줄을 이와 같이 줄여쓸 수 있음
 app.use(logger);
-app.use(express.json()); // 모든 요청으로 json 형태로 바꿔줌
+app.use((req, res, next) => {
+	express.json()(req, res, next)
+})
+// app.use(express.json()); // 위 표현과 같음;모든 요청으로 json 형태로 바꿔줌
 app.use(express.urlencoded({extended: false})); // express 모듈을 씀
 
 /* routers */
@@ -40,15 +43,16 @@ app.get('/err', (req, res, next) => { // 서버 내부 에러
 });
  */
 
- app.get('/test/upload', (req, res, next) => {
+app.get('/test/upload', (req, res, next) => {
 	res.render('test/upload');
- });
+});
 
 // upfile은 upload라는 미들웨어의 single 메서드로 처리
- app.post('/test/save', upload.single('upfile'), (req, res, next) => {
-	const {title, upfile} = req.body;
-	res.redirect('/board');
- });
+app.post('/test/save', upload.single('upfile'), (req, res, next) => {
+	// const {title, upfile} = req.body;
+	// res.redirect('/board');]
+	res.json(req.file);
+});
 
 /* error(예외처리;맞는 라우터를 찾지 못하여 respond를 해주지 못 한 경우) */
 app.use((req, res, next) => {
