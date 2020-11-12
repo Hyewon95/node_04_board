@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
-const {upload} = require('./modules/multer_conn');
+const createError = require('http-errors');
+// const {upload} = require('./modules/multer_conn');
 
 // var : gabage collection 대상(한 번 쓰고 버릴 아이들)
 // const : gabage collection 대상이 아님
@@ -43,6 +44,8 @@ app.get('/err', (req, res, next) => { // 서버 내부 에러
 });
  */
 
+/* 
+// board.js에 upload.single('upfile')를 선언하였으므로 제거
 app.get('/test/upload', (req, res, next) => {
 	res.render('test/upload');
 });
@@ -53,18 +56,34 @@ app.post('/test/save', upload.single('upfile'), (req, res, next) => {
 	// res.redirect('/board');]
 	res.json(req.file);
 });
+ */
 
-/* error(예외처리;맞는 라우터를 찾지 못하여 respond를 해주지 못 한 경우) */
+// error(예외처리;맞는 라우터를 찾지 못하여 respond를 해주지 못 한 경우)
+/* 
 app.use((req, res, next) => {
 	const err = new Error();
 	err.code = 404;
 	err.msg = '요청하신 페이지를 찾을 수 없습니다.';
-	next(err); // 해당 에러를 처리해 달라고 아래 미들웨어로 보냄
+	next(createError(404, '요청하신 페이지를 찾을 수 없습니다.')); // 해당 에러를 처리해 달라고 아래 미들웨어로 보냄
 });
 
 app.use((err, req, res, next) => {
 	console.log(err);
 	const code = err.code || 500;
 	const msg = err.msg || '서버 내부 오류입니다. 관리자에게 문의하세요.';
+	res.render('./error.pug', {code, msg});
+});
+ */
+
+app.use((req, res, next) => {
+	next(createError(404, '요청하신 페이지를 찾을 수 없습니다.'));
+});
+
+
+app.use((err, req, res, next) => {
+	console.log(err);
+	let code = err.status || 500;
+	let message = err.status == 404 ? '요청하신 페이지를 찾을 수 없습니다.' : '서버 내부 오류입니다. 관리자에게 문의하세요.';
+	let msg = process.env.SERVICE != 'production' ? err.message || message : message;
 	res.render('./error.pug', {code, msg});
 });

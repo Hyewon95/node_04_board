@@ -3,7 +3,7 @@ const moment = require('moment');
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs/promises');
-const {v4:uuidv4} = require('uuid'); // uuidv4 난수 생성
+const {v4: uuidv4} = require('uuid'); // uuidv4 난수 생성
 const allowExt = ['jpg', 'jpeg', 'png', 'gif', 'doc', 'docx', 'ppt', 'pptx', 'pdf'];
 const imgExt = ['jpg', 'jpeg', 'png', 'gif'];
 

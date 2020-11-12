@@ -6,14 +6,20 @@ block content
 			button.btn.btn-primary(onclick="location.href='/';") 로그인
 		div.form-wrap
 			form(method="post" name="boardForm" action=`${list ? '/board/saveUpdate' : '/board/save'}` enctype="multipart/form-data")
-				-// 조건절에 list.id만을 선언한다면, list가 없다면 에러가 뜬다.
+				//- 조건절에 list 없이 list.id만을 선언한다면, 오류가 발생한다.
 				input(type="hidden" name="id" value=`${list && list.id ? list.id : ''}`)
 				input.form-control(type="text" name="title" placeholder="제목을 입력하세요." value=`${list && list.title ? list.title : ''}`)
 				input.form-control(type="text" name="writer" placeholder="작성자를 입력하세요." value=`${list && list.writer ? list.writer : ''}`)
-				input.form-control-file(name='upfile' type="file")
+				div
+					if list && list.savefile
+						.file-wrap.mb-2.py-2.border-bottom
+							span.font-weight-bold= list.realfile
+							//- 페이지 이동이 없으려면 다음과 같이 선언. a태그가 아니라면 href를 onclick으로 대신한다.
+							a.fa.fa-times-circle.ml-2(href=`javascript: fileRemove(${list.id})`)
+					input.form-control-file(name='upfile' type="file")
 				textarea.form-control(name="content" placeholder="내용을 입력하세요.")=`${list && list.content ? list.content : ''}`
 				hr
-				-// pug의 if문
+				//- pug의 if문
 				if list
 					button.btn.btn-success 수정
 				else
