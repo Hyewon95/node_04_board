@@ -1,0 +1,46 @@
+.pagination.my-5.justify-content-center
+	//- board.js에서 pug.pagers = pagers;뿐만 아니라 pug = {...pug, ...pagers};를 추가 선언하여, pagers.page가 아닌 page로 바로 변수를 사용 가능
+	if page == 1
+		.page-item.disabled
+			a.page-link(href=``)
+				i.fa.fa-angle-double-left
+				//- i.fa.fa-backward
+	else
+		.page-item
+			a.page-link(href=`/board/list/1`)
+				i.fa.fa-angle-double-left
+	if prevPage == 0
+		.page-item.disabled
+			a.page-link(href=``)
+				i.fa.fa-angle-left
+	else
+		.page-item
+			a.page-link(href=`/board/list/${prevPage}`)
+				i.fa.fa-angle-left
+	- for(let i=startPage;i<=endPage;i++) //- "-"는 javascript를 사용하겠다는 의미
+		if i == page
+			.page-item.active
+				a.page-link(href=`/board/list/${i}`)= i
+		else
+			.page-item
+				a.page-link(href=`/board/list/${i}`)= i
+			//- .page-item
+			//- 	a.page-link(href=``) 2
+			//- .page-item
+			//- 	a.page-link(href=``) 3
+	if nextPage == 0
+		.page-item.disabled
+			a.page-link(href=``)
+				i.fa.fa-angle-right
+	else
+		.page-item
+			a.page-link(href=`/board/list/${nextPage}`)
+				i.fa.fa-angle-right
+	if totalPage == page
+		.page-item.disabled
+			a.page-link(href=``)
+				i.fa.fa-angle-double-right
+	else
+		.page-item
+			a.page-link(href=`/board/list/${totalPage}`)
+				i.fa.fa-angle-double-right
