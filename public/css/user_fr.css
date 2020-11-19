@@ -1,0 +1,6 @@
+.tb-join .title{width: 20%;padding-left: 1em;font-weight: bold;}
+.tb-join .content{}
+.tb-join .valid::before{content: "* ";display: inline-block;margin-right: 0.5em;}
+.tb-join .valid{display: none;padding-top: 0.5em;color: #ff0000;}
+.tb-join .valid.active{color: #0000ff;}
+.tb-join input{max-width: 300px;}

@@ -7,6 +7,8 @@
 // proxy - reverse proxy
 
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+
 let password = 'abcd1234';
 let salt = 'adsffadsfasdfsdf!@$#%^*&';
 let hash = crypto.createHash('sha512').update(password+salt).digest('base64'); // password를 'sha512'방식으로 암호화 & 표현방식은 'base64'
@@ -35,6 +37,16 @@ console.log(result2);
 // 이전에는 소수의 인원이 서버를 점령하고 있어 이를 해결하기 위해 www(World Wide Web)과 http 통신규약 생성됨.
 // CGI > ASP(deprecated > ASPX) / PHP / JSP > NODE
 
-// 사용자의 정보를 server에 남기게 되면 비동기라 session에 정보를 15분간 가지고 있는데 사용자 수가 늘어나면 overflow되어 서버가 터짐
+// 사용자의 정보를 server에 남기게 되면 비동기라 session에 정보를 15분간 가지고 있는데 사용자 수가 늘어나게되면 overflow되어 서버가 터짐
 // 반면 cookie에 남기게 되면 서버가 제대로 작동을 못함
 // 즉, 이를 해결하기 위해 새로운 데이터베이스(대표적으로 mongo, redis)에 무작위로 저장
+
+// bcrypt는 async/await/promises 지원
+async function bcryptTest(){
+	let bcryptHash = await bcrypt.hash(password+salt, 8); // "password+salt"를 8번정도 암호화하여 결과를 보여줌.
+	let bcryptHash2 = await bcrypt.hash(password+salt, 8);
+	let bcryptCompare = await bcrypt.compare(password+salt, bcryptHash); // 둘의 결과를 비교하여 일치하면 true, 불일치하면 false
+	console.log(bcryptHash, bcryptHash2, bcryptCompare); // bcryptHash와 bcryptHash2의 결과값은 다름.
+}
+
+bcryptTest();

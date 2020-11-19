@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const createError = require('http-errors');
+const session = require('express-session');
 // const {upload} = require('./modules/multer_conn');
 
 // var : gabage collection 대상(한 번 쓰고 버릴 아이들)
@@ -14,6 +15,7 @@ const createError = require('http-errors');
 const logger = require('./modules/morgan_conn');
 const boardRouter = require('./routes/board');
 const galleryRouter = require('./routes/gallery');
+const userRouter = require('./routes/user');
 
 /* initialize */
 app.listen(process.env.PORT, () => {console.log(`http://127.0.0.1:${process.env.PORT}`);});
@@ -31,12 +33,31 @@ app.use((req, res, next) => {
 })
 // app.use(express.json()); // 위 표현과 같음;모든 요청으로 json 형태로 바꿔줌
 app.use(express.urlencoded({extended: false})); // express 모듈을 씀
+/* 
+app.use((req, res, next) => {
+	console.log(req.session);
+	next();
+});
+ */
+app.use(session({ // 다음의 옵션을 포함하여 session을 실행.
+	secret: process.env.SESSION_SALT,
+	resave: false,
+	saveUninitialized: true,
+	cookie: {secure: false}
+}));
+/* 
+app.use((req, res, next) => {
+	console.log(req.session);
+	next();
+});
+ */
 
 /* routers */
 app.use('/', express.static(path.join(__dirname, './public')));
 app.use('/storage', express.static(path.join(__dirname, './uploads')));
 app.use('/board', boardRouter);
 app.use('/gallery', galleryRouter);
+app.use('/user', userRouter);
 /* 
 app.get('/err', (req, res, next) => { // 서버 내부 에러
 	const err = new Error();
